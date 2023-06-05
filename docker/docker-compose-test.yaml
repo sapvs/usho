@@ -1,0 +1,85 @@
+services:
+  galera:
+    image: bitnami/mariadb-galera:latest
+    expose:
+      - '3306'
+      - '4444'
+      - '4567'
+      - '4568'
+    volumes:
+      - usho_galera_data:/bitnami/mariadb
+    environment:
+      - MARIADB_DATABASE=usho
+      - MARIADB_USER=ushouser
+      - MARIADB_PASSWORD=password
+      - ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'mysql -s -u $$MARIADB_USER -p$$MARIADB_PASSWORD -e "show databases;" > /dev/null 2>&1 || exit 1'
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  redis:
+    image: redis:alpine
+    expose:
+      - "6379"
+    volumes:
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -w 1 -z localhost 6379 || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:z
+    depends_on:
+      usho:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -w 1 -z localhost 4000 || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  usho:
+    depends_on:
+      galera:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: docker/usho/Dockerfile
+    image: s3vt/usho:1.0
+    environment:
+      - MYSQL_HOST=galera
+      - MYSQL_PORT=3306
+      - MYSQL_USER=ushouser
+      - MYSQL_DB=usho
+      - MYSQL_PASSWORD=password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    expose:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -w 1 -z localhost 8080 || exit 1" ]
+      interval: 15s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  usho_galera_data:
