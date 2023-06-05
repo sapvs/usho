@@ -3,52 +3,41 @@ URL Shortner java spring application.
 ## Architecture
 1. nginx frontend
 1. Spring Boot Backend
-    1. Spring Starter Web
-    1. Spring Starter Redis
-    1. Spring Starter Data Cassandra
+    1. Spring Web
+    1. Spring Redis
+    1. Spring Data MySQL
 1. Redis Cache
-1. Cassandra Database
+1. MySQL Galera Database
 
 
 ## Build
-### Compile and package
 ```mvn clean package```
 
-### Docker Compose
-From this folder
-
-```docker-compose up -f docker/docker-compose.yml```
-
-### Using Makefile
-
+## Run
+### Makefile
 ```make up```
 
-### Scale
+### Docker Compose
+```docker-compose up -f docker/docker-compose.yml```
 ```docker-compose -f docker/docker-compose.yml up --scale usho=2```
 
 ### Stop
-From this folder
+### Makefile
+```make down```
 
+### Docker Compose
 ```docker-compose down -f docker/docker-compose.yml```
-
 
 ### Using Makefile
 
 #### Start
 ```make up```
-
 #### Stop
 ```make down```
-
-
 ## Testing
-
 Service runs behind nginx proxying to spring boot container usho
-
-### Swagger
+## Swagger Not Available
 Access http://localhost:4000/swagger-ui.html
-
-
 ## Create short URL for long URL
 ### Make
 ```make usho```
@@ -73,6 +62,5 @@ Response
 ### Delete mapping
 
 ```curl -X DELETE http://localhost:4000/usho/ailjoN```
-
 
 Confirm again on the browser, accessing URL should return 404.
