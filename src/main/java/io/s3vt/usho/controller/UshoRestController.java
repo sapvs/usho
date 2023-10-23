@@ -38,7 +38,7 @@ public class UshoRestController {
 
     @ExceptionHandler(value = ResponseStatusException.class)
     public ErrorResponse handleCustomerAlreadyExistsException(ResponseStatusException ex) {
-        return new ErrorResponse(ex.getRawStatusCode(), ex.getMessage());
+        return new ErrorResponse(ex.getStatusCode().value(), ex.getMessage());
     }
 }
 
