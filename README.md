@@ -18,8 +18,10 @@ URL Shortner java spring application.
 ```make up```
 
 ### Docker Compose
-```docker-compose up -f docker/docker-compose.yml```
-```docker-compose -f docker/docker-compose.yml up --scale usho=2```
+```
+docker-compose up -f docker/docker-compose.yml
+docker-compose -f docker/docker-compose.yml up --scale usho=2
+```
 
 ### Stop
 ### Makefile
