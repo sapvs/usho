@@ -13,12 +13,14 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+permissions: read-all
+
 
 jobs:
   build:
-
+    permissions: 
+      contents: read
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v6
     - name: Set up JDK 17
